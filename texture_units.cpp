@@ -199,13 +199,13 @@ int main() {
    glUniform1i(glGetUniformLocation(shader_program, "our_tex1"), 0);
    glUniform1i(glGetUniformLocation(shader_program, "our_tex2"), 1);
 
+   glActiveTexture(GL_TEXTURE0);
+   glBindTexture(GL_TEXTURE_2D, TEX1);
+
+   glActiveTexture(GL_TEXTURE1);
+   glBindTexture(GL_TEXTURE_2D, TEX2);
+
    while (!glfwWindowShouldClose(window)) {
-
-      glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, TEX1);
-
-      glActiveTexture(GL_TEXTURE1);
-      glBindTexture(GL_TEXTURE_2D, TEX2);
 
       glUseProgram(shader_program);
       glDrawArrays(GL_TRIANGLES, 0, 3);

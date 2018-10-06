@@ -1,5 +1,5 @@
 LINKERS := -ldl -lglfw3 -lm -lX11 -lGL -lGLU -lpthread
-INCLUDE_DIRS := include
+INCLUDE_DIRS := include 
 
 render_window: render_window.cpp
 	@g++ render_window.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/render_window
@@ -33,6 +33,18 @@ texture_units: texture_units.cpp
 	@g++ texture_units.cpp src/glad.c shader.cpp -I ${INCLUDE_DIRS} ${LINKERS} -o bin/texture_units
 	@echo "Built texture units generator"
 
+transformations: transformations.cpp
+	@g++ transformations.cpp src/glad.c shader.cpp -pedantic -I ${INCLUDE_DIRS} ${LINKERS} -o bin/transformations
+	@echo "Built tranformations renderer"
+
+going_3d: going_3d.cpp
+	@g++ going_3d.cpp src/glad.c shader.cpp -pedantic -I ${INCLUDE_DIRS} ${LINKERS} -o bin/going_3d
+	@echo "Built going 3d transformations!"
+
+more_3d: more_3d.cpp
+	@g++ more_3d.cpp src/glad.c shader.cpp -pedantic -I ${INCLUDE_DIRS} ${LINKERS} -o bin/more_3d
+	@echo "Built more 3d transformations!"
+
 ex1: ex/ex1.cpp
 	@g++ ex/ex1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/ex1
 	@echo "Built ex 1"
@@ -60,4 +72,5 @@ all: render_window \
 	  more_attributes \
 	  shader_class \
 	  texture \
-	  texture_units
+	  texture_units \
+	  going_3d
