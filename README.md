@@ -18,3 +18,7 @@
   <img src="./imgs/texture_units3.png" width="32%" >
 </div>
 
+## 3D projections
+<div class="fig figcenter fighighlight">
+  <img src="./imgs/3d_projection.gif" width="100%" >
+</div>

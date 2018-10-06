@@ -14,11 +14,11 @@ const char *vertex_shader_src = "#version 330 core\n"
                             "layout (location = 0) in vec3 ipos;\n"
                             "layout (location = 1) in vec2 itex;\n"
                             "out vec2 tex;\n"                              
-                            "uniform mat4 rotate;\n"
+                            "uniform mat4 view;\n"
                             "uniform mat4 model;\n"
-                            "uniform mat4 scale;\n"
+                            "uniform mat4 projection;\n"
                             "void main() {\n"
-                            "gl_Position = model * rotate * scale * vec4(ipos, 1.0f);\n"
+                            "gl_Position = projection * view * model * vec4(ipos, 1.0f);\n"
                             "tex = itex;\n"
                             "}\n";
 
@@ -218,28 +218,29 @@ int main() {
    glActiveTexture(GL_TEXTURE1);
    glBindTexture(GL_TEXTURE_2D, TEX2);
 
+   glm::mat4 view;
+   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -15.0f));
+   glm::mat4 projection;
+   projection = glm::perspective(glm::radians(45.0f), (float)s_width/s_height, 0.1f, 100.0f);
+   glm::mat4 scale;
+   scale = glm::scale(scale, glm::vec3(2.5, 2.5, 2.5)); 
+
+
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
       glUseProgram(shader_program);
       glBindVertexArray(VAO);
       for (int i = 0; i < 10; ++i) {
-         glm::mat4 rotate;
-         rotate = glm::rotate(rotate, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5, 1.0, 0.0));
-
          glm::mat4 model;
+         model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(0.5f, 1.0f, 0.0f));           
          model = glm::translate(model, cube_positions[i]);
-
-         glm::mat4 scale;
-         scale = glm::scale(scale, glm::vec3(0.2, 0.2, 0.2)); 
-
-         int rotate_loc = glGetUniformLocation(shader_program, "rotate");
-         glUniformMatrix4fv(rotate_loc, 1, GL_FALSE, glm::value_ptr(rotate));
 
          int model_loc = glGetUniformLocation(shader_program, "model");
          glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
-
-         int scale_loc = glGetUniformLocation(shader_program, "scale");
-         glUniformMatrix4fv(scale_loc, 1, GL_FALSE, glm::value_ptr(scale));
+         int view_loc = glGetUniformLocation(shader_program, "view");
+         glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));
+         int projection_loc = glGetUniformLocation(shader_program, "projection");
+         glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
 
          glDrawArrays(GL_TRIANGLES, 0, 36);         
       }
