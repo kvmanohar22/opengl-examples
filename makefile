@@ -25,6 +25,14 @@ shader_class: triangle_using_shader.cpp
 	@g++ triangle_using_shader.cpp src/glad.c shader.cpp -I ${INCLUDE_DIRS} ${LINKERS} -o bin/shader_class
 	@echo "Built rendering triangle using shader class"
 
+texture: texture.cpp
+	@g++ texture.cpp src/glad.c shader.cpp -I ${INCLUDE_DIRS} ${LINKERS} -o bin/texture
+	@echo "Built texture generator"
+
+texture_units: texture_units.cpp
+	@g++ texture_units.cpp src/glad.c shader.cpp -I ${INCLUDE_DIRS} ${LINKERS} -o bin/texture_units
+	@echo "Built texture units generator"
+
 ex1: ex/ex1.cpp
 	@g++ ex/ex1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/ex1
 	@echo "Built ex 1"
@@ -50,4 +58,6 @@ all: render_window \
 	  ex3 \
 	  shaders \
 	  more_attributes \
-	  shader_class
+	  shader_class \
+	  texture \
+	  texture_units
