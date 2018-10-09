@@ -69,6 +69,22 @@ rotate_light_source: rotate_light_source.cpp
 	@g++ rotate_light_source.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/rotate_light_source
 	@echo "Built simulating rotation of light source"
 
+material1: 02.lighting/materials/material1.cpp
+	@g++ 02.lighting/materials/material1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/material1
+	@echo "Built simulating materials 1"
+
+diffuse_maps: 02.lighting/04.lighting_maps/diffuse_maps.cpp
+	@g++ 02.lighting/04.lighting_maps/diffuse_maps.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/diffuse_maps
+	@echo "Built diffuse maps"
+
+specular_maps: 02.lighting/04.lighting_maps/specular_maps.cpp
+	@g++ 02.lighting/04.lighting_maps/specular_maps.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/specular_maps
+	@echo "Built specular maps"
+
+directional: 02.lighting/05.light_casters/directional.cpp
+	@g++ 02.lighting/05.light_casters/directional.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/directional
+	@echo "Built directional light casters"
+
 ex1: ex/ex1.cpp
 	@g++ ex/ex1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/ex1
 	@echo "Built ex 1"
