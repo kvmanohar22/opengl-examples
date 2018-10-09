@@ -45,6 +45,30 @@ more_3d: more_3d.cpp
 	@g++ more_3d.cpp src/glad.c shader.cpp -pedantic -I ${INCLUDE_DIRS} ${LINKERS} -o bin/more_3d
 	@echo "Built more 3d transformations!"
 
+camera: camera.cpp
+	@g++ camera.cpp src/glad.c shader.cpp -pedantic -I ${INCLUDE_DIRS} ${LINKERS} -o bin/camera
+	@echo "Built camera transformations!"
+
+camera2: camera2.cpp
+	@g++ camera2.cpp src/glad.c shader.cpp -pedantic -I ${INCLUDE_DIRS} ${LINKERS} -o bin/camera2
+	@echo "Built camera dynamics!"
+
+camera3: camera3.cpp
+	@g++ camera3.cpp src/glad.c shader.cpp -pedantic -I ${INCLUDE_DIRS} ${LINKERS} -o bin/camera3
+	@echo "Built camera mouse dynamics!"
+
+colors: colors.cpp
+	@g++ colors.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/colors
+	@echo "Built colors rendering!"
+
+colors2: colors2.cpp
+	@g++ colors2.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/colors2
+	@echo "Built simulating different lighting conditions!"
+
+rotate_light_source: rotate_light_source.cpp
+	@g++ rotate_light_source.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/rotate_light_source
+	@echo "Built simulating rotation of light source"
+
 ex1: ex/ex1.cpp
 	@g++ ex/ex1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/ex1
 	@echo "Built ex 1"
@@ -73,4 +97,6 @@ all: render_window \
 	  shader_class \
 	  texture \
 	  texture_units \
-	  going_3d
+	  going_3d \
+	  more_3d \
+	  camera

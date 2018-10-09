@@ -218,13 +218,10 @@ int main() {
    glActiveTexture(GL_TEXTURE1);
    glBindTexture(GL_TEXTURE_2D, TEX2);
 
-   glm::mat4 view;
-   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -15.0f));
    glm::mat4 projection;
    projection = glm::perspective(glm::radians(45.0f), (float)s_width/s_height, 0.1f, 100.0f);
    glm::mat4 scale;
    scale = glm::scale(scale, glm::vec3(2.5, 2.5, 2.5)); 
-
 
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -233,6 +230,12 @@ int main() {
       for (int i = 0; i < 10; ++i) {
          glm::mat4 model;
          model = glm::translate(model, cube_positions[i]);
+
+         float radius = 15.0f;
+         float camX = sin(glfwGetTime()) * radius;
+         float camZ = cos(glfwGetTime()) * radius;
+         glm::mat4 view;
+         view = glm::lookAt(glm::vec3(camX, 0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
          int model_loc = glGetUniformLocation(shader_program, "model");
          glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));

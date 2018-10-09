@@ -31,6 +31,34 @@ const char *fragment_shader_src = "#version 330 core\n"
                               "frag_color = mix(texture(stex1, tex), texture(stex2, tex), 0.4);\n"
                               "}\n";
 
+// for adjusting camera speed
+float delta_time = 0.0f;
+float last_frame = 0.0f;
+
+// for camera related positions
+glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
+glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
+glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+void process_input(GLFWwindow *window) {
+   float current_frame = glfwGetTime();
+   delta_time = current_frame - last_frame;
+   last_frame = current_frame;
+   float camera_speed = 2.5f * delta_time;
+   std::cout << "Camera speed: "
+             << camera_speed
+             << std::endl;
+
+   if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+      camera_pos += camera_speed * camera_front;
+   else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+      camera_pos -= camera_speed * camera_front;
+   else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+      camera_pos -= glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+   else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+      camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+}
+
 int main() {
    int s_width = 800, s_height = 600;
    glfwInit();
@@ -218,10 +246,8 @@ int main() {
    glActiveTexture(GL_TEXTURE1);
    glBindTexture(GL_TEXTURE_2D, TEX2);
 
-   glm::mat4 view;
-   view = glm::translate(view, glm::vec3(0.0f, 0.0f, -15.0f));
    glm::mat4 projection;
-   projection = glm::perspective(glm::radians(45.0f), (float)s_width/s_height, 0.1f, 100.0f);
+   projection = glm::perspective(glm::radians(85.0f), (float)s_width/s_height, 0.1f, 100.0f);
    glm::mat4 scale;
    scale = glm::scale(scale, glm::vec3(2.5, 2.5, 2.5)); 
 
@@ -231,8 +257,15 @@ int main() {
       glUseProgram(shader_program);
       glBindVertexArray(VAO);
       for (int i = 0; i < 10; ++i) {
+         process_input(window);
          glm::mat4 model;
          model = glm::translate(model, cube_positions[i]);
+
+         float radius = 50.0f;
+         float camX = sin(glfwGetTime()) * radius;
+         float camZ = cos(glfwGetTime()) * radius;
+         glm::mat4 view;
+         view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
 
          int model_loc = glGetUniformLocation(shader_program, "model");
          glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
