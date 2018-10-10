@@ -1,4 +1,8 @@
-
+/*
+ * Attenuation: To reduce the intensity of light, over the distance a light ray travels is called attenuation
+ */
+ 
+ 
 
 /*
  * Light casters: A light source that casts light upon objects is called a light caster
@@ -46,10 +50,14 @@ const char *fragment_shader_src1 = "#version 330 core\n"
                               " float shininess;\n"
                               "};\n"
                               "struct Light {"
+                              "vec3 position;\n"
                               "vec3 direction;\n"
                               "vec3 ambient;\n"
                               "vec3 diffuse;\n"
                               "vec3 specular;\n"
+                              "float constant;\n"
+                              "float linear;\n"
+                              "float quadratic;\n"
                               "};\n"
                               "uniform vec3 view_pos;\n"
                               "uniform Material material;\n"
@@ -58,8 +66,10 @@ const char *fragment_shader_src1 = "#version 330 core\n"
                               "in vec2 tex;\n"
                               "in vec3 frag_pos;\n"
                               "void main() {\n"
+                              "float distance = length(light.position - frag_pos);\n"
+                              "float attenuation = 1.0/(light.constant + light.linear * distance + light.quadratic * (distance * distance));\n"
                               "vec3 norm = normalize(norm);\n"
-                              "vec3 light_dir = normalize(-light.direction);\n"
+                              "vec3 light_dir = normalize(light.position - frag_pos);\n"
                               "float cos_theta = max(dot(norm, light_dir), 0.0f);\n"
                               "vec3 diffuse = light.diffuse * cos_theta * vec3(texture(material.diffuse, tex));\n"
                               "vec3 ambient = light.ambient * vec3(texture(material.diffuse, tex));\n"
@@ -67,6 +77,9 @@ const char *fragment_shader_src1 = "#version 330 core\n"
                               "vec3 reflect_dir = reflect(-light_dir, norm);\n"
                               "float spec = pow(max(dot(reflect_dir, view_dir), 0.0), material.shininess);\n"
                               "vec3 specular = light.specular*spec*vec3(texture(material.specular, tex));\n"
+                              "ambient *= attenuation;\n"
+                              "diffuse *= attenuation;\n"
+                              "specular *= attenuation;\n"
                               "vec3 result_color = specular + diffuse + ambient;\n"
                               "frag_color = vec4(result_color, 1.0f);\n"
                               "}\n";
@@ -235,6 +248,21 @@ float vertices[] = {
    glEnableVertexAttribArray(2);
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindVertexArray(0);
+   // For light source
+   unsigned int VBO2, VAO2;
+   glGenBuffers(1, &VBO2);
+   glGenVertexArrays(1, &VAO2);
+   glBindVertexArray(VAO2);
+   glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+   glEnableVertexAttribArray(0);
+   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+   glEnableVertexAttribArray(1);
+   glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+   glEnableVertexAttribArray(2);
+   glBindBuffer(GL_ARRAY_BUFFER, 0);
+   glBindVertexArray(0);
 
    // Texture for diffuse lighting
    unsigned int TEX1;
@@ -283,10 +311,17 @@ float vertices[] = {
    glActiveTexture(GL_TEXTURE1);
    glBindTexture(GL_TEXTURE_2D, TEX2);
 
+   glm::vec3 view_(-2.0f, -0.6f, -5.0f);
+   glm::vec3 light_position(1.2f, 1.0f, 2.0f);
+   glm::vec3 camera_pos(2.0f, 2.0f, 6.0f);
+   glm::vec3 camera_front(0.0f, 0.0f, 0.0f);
+   glm::vec3 camera_up(0.0f, 1.0f, 0.0f);
+
    glm::mat4 projection;
    projection = glm::perspective(glm::radians(45.0f), (float)s_width/s_height, 0.1f, 100.0f);
+
    glm::mat4 view;
-   view = glm::translate(view, glm::vec3(-2.0f, -0.6f, -8.0f));
+   view = glm::lookAt(camera_pos, camera_front, camera_up);
 
    int model_loc, view_loc, projection_loc, obj_loc, light_color_loc, light_pos_loc, view_pos_loc;
    int mat_amb_pos, mat_dif_pos, mat_spc_pos, mat_shininess;
@@ -294,13 +329,35 @@ float vertices[] = {
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      // Render objects
-      glUseProgram(shader_program_obj);
+      // Render light source
+      glUseProgram(shader_program_light);
       glBindVertexArray(VAO1);
 
+      glm::mat4 model;
+      float radius = 3.0f;
+      float posX = sin(glfwGetTime()) * radius;
+      float posZ = cos(glfwGetTime()) * radius;
+      model = glm::translate(model, glm::vec3(posX, 0, posZ));
+      // model = glm::translate(model, light_position);
+      model = glm::scale(model, glm::vec3(0.02f));
+      model_loc = glGetUniformLocation(shader_program_light, "model");
+      glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
+
+      view_loc = glGetUniformLocation(shader_program_light, "view");
+      glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));
+      projection_loc = glGetUniformLocation(shader_program_light, "projection");
+      glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
+
+      glDrawArrays(GL_TRIANGLES, 0, 36);         
+      glBindVertexArray(0);
+
+      // Render objects
+      glUseProgram(shader_program_obj);
+      glBindVertexArray(VAO2);
+
       // Material properties
-      //mat_spc_pos = glGetUniformLocation(shader_program_obj, "material.specular");
-      //glUniform3f(mat_spc_pos, 0.5f, 0.5f, 0.5f);
+      mat_spc_pos = glGetUniformLocation(shader_program_obj, "material.specular");
+      glUniform3f(mat_spc_pos, 0.5f, 0.5f, 0.5f);
       mat_shininess = glGetUniformLocation(shader_program_obj, "material.shininess");
       glUniform1f(mat_shininess, 64.0f);
       glUniform1i(glGetUniformLocation(shader_program_obj, "material.diffuse"), 0);
@@ -309,12 +366,24 @@ float vertices[] = {
       // Light properties
       light_pos_loc = glGetUniformLocation(shader_program_obj, "light.direction");
       glUniform3f(light_pos_loc, -0.2f, -1.0f, -0.3f);
+      light_pos_loc = glGetUniformLocation(shader_program_obj, "light.position");
+      glUniform3f(light_pos_loc, posX, 0.0f, posZ);
+      // glUniform3fv(light_pos_loc, 1, glm::value_ptr(light_position));
       light_amb_pos = glGetUniformLocation(shader_program_obj, "light.ambient");
       glUniform3f(light_amb_pos, 0.2f, 0.2f, 0.2f);
       light_dif_pos = glGetUniformLocation(shader_program_obj, "light.diffuse");
       glUniform3f(light_dif_pos, 0.5f, 0.5f, 0.5f);
       light_spc_pos = glGetUniformLocation(shader_program_obj, "light.specular");
       glUniform3f(light_spc_pos, 1.0f, 1.0f, 1.0f);
+      glUniform1f(glGetUniformLocation(shader_program_obj, "light.constant"), 1.0f);
+      glUniform1f(glGetUniformLocation(shader_program_obj, "light.linear"), 0.07f);
+      glUniform1f(glGetUniformLocation(shader_program_obj, "light.quadratic"), 0.017f);
+      projection_loc = glGetUniformLocation(shader_program_obj, "projection");
+      glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
+      view_pos_loc = glGetUniformLocation(shader_program_obj, "view_pos");
+      glUniform3fv(view_pos_loc, 1, glm::value_ptr(camera_pos));
+      view_loc = glGetUniformLocation(shader_program_obj, "view");
+      glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));
 
       for (int i = 0; i < 10; ++i) {
          glm::mat4 model;
@@ -322,12 +391,6 @@ float vertices[] = {
          model = glm::rotate(model, glm::radians(20.0f * i), glm::vec3(1.0f, 0.3f, 0.5f));
          model_loc = glGetUniformLocation(shader_program_obj, "model");
          glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
-         view_loc = glGetUniformLocation(shader_program_obj, "view");
-         glUniformMatrix4fv(view_loc, 1, GL_FALSE, glm::value_ptr(view));
-         projection_loc = glGetUniformLocation(shader_program_obj, "projection");
-         glUniformMatrix4fv(projection_loc, 1, GL_FALSE, glm::value_ptr(projection));
-         view_pos_loc = glGetUniformLocation(shader_program_obj, "view_pos");
-         glUniform3f(view_pos_loc, 2.0f, 0.6f, 8.0f);
 
          glDrawArrays(GL_TRIANGLES, 0, 36);         
       }

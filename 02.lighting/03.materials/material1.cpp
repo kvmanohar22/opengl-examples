@@ -235,7 +235,7 @@ float vertices[] = {
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      // Render light source
+      // Render light source 💡
       glUseProgram(shader_program_light);
       glBindVertexArray(VAO1);
 

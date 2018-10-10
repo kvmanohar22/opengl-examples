@@ -82,8 +82,20 @@ specular_maps: 02.lighting/04.lighting_maps/specular_maps.cpp
 	@echo "Built specular maps"
 
 directional: 02.lighting/05.light_casters/directional.cpp
-	@g++ 02.lighting/05.light_casters/directional.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/directional
+	@g++ 02.lighting/05.light_casters/directional.cpp src/glad.c -Wpragmas -I ${INCLUDE_DIRS} ${LINKERS} -o bin/directional
 	@echo "Built directional light casters"
+
+pointlight: 02.lighting/05.light_casters/point_lights.cpp
+	@g++ 02.lighting/05.light_casters/point_lights.cpp src/glad.c -Wpragmas -I ${INCLUDE_DIRS} ${LINKERS} -o bin/pointlight
+	@echo "Built point light casters"
+
+spotlight: 02.lighting/05.light_casters/spotlight.cpp
+	@g++ 02.lighting/05.light_casters/spotlight.cpp src/glad.c -Wpragmas -I ${INCLUDE_DIRS} ${LINKERS} -o bin/spotlight
+	@echo "Built spotlight casters"
+
+multiple_lights: 02.lighting/06.multiple_lights/multiple_lights.cpp
+	@g++ -std=c++11 02.lighting/06.multiple_lights/multiple_lights.cpp src/glad.c -Wpragmas -I ${INCLUDE_DIRS} ${LINKERS} -o bin/multiple_lights
+	@echo "Built multiple lights showcase!"
 
 ex1: ex/ex1.cpp
 	@g++ ex/ex1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/ex1
