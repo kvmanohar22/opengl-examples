@@ -113,7 +113,6 @@ int main() {
    glfwSetScrollCallback(window, scroll_callback);
 
    // Generate shader programs
-   unsigned int shader_program_obj, shader_program_light;
    Shader obj_shader("shaders/02/multiple_lights/obj_shader.vs",
                      "shaders/02/multiple_lights/obj_shader.fs"
                     );
@@ -272,8 +271,8 @@ int main() {
    glm::vec3 light_specular(0.5f);
 
    float c = 1.0;
-   float l = 0.7;
-   float q = 1.8;
+   float l = 0.09;
+   float q = 0.032;
 
    glm::mat4 projection;
    projection = glm::perspective(glm::radians(45.0f), (float)s_width/s_height, 0.1f, 100.0f);
@@ -293,17 +292,16 @@ int main() {
       light_shader.setmat4("projection", projection);
       for (int i = 0; i < 4; ++i) {
          glm::mat4 model;
-         if (i == 4) {
+         if (i == 2) {
             float radius = 3.0f;
             float posX = sin(glfwGetTime()) * radius;
             float posZ = cos(glfwGetTime()) * radius;
             model = glm::translate(model, glm::vec3(posX, 0, posZ));
             point_light_positions[2] = glm::vec3(posX, 0, posZ);
-            model = glm::scale(model, glm::vec3(0.2f));
          } else {
             model = glm::translate(model, point_light_positions[i]);
-            model = glm::scale(model, glm::vec3(0.2f));
          }
+         model = glm::scale(model, glm::vec3(0.09f));
          light_shader.setmat4("model", model);
          glDrawArrays(GL_TRIANGLES, 0, 36);
       }
@@ -352,7 +350,7 @@ int main() {
       obj_shader.setvec3("_dir_source.ambient", glm::vec3(0.05f));
       obj_shader.setvec3("_dir_source.diffuse", glm::vec3(0.4f));
       obj_shader.setvec3("_dir_source.specular", glm::vec3(0.5f));
-   
+
       obj_shader.setvec3("view_pos", camera_pos);
       obj_shader.setmat4("view", view);
       obj_shader.setmat4("projection", projection);

@@ -75,6 +75,10 @@ vec3 calculate_point_light(
    vec3 diffuse = light.diffuse * diff * vec3(texture(material.diffuse,  tex_pos));
    vec3 specular = light.specular * spec * vec3(texture(material.specular,  tex_pos));
    
+   ambient *= attenuation;
+   diffuse *= attenuation;
+   specular *= attenuation;
+
    return  (ambient + diffuse + specular);   
 }
 

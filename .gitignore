@@ -1,2 +1,4 @@
 include/glm/**
+include/assim**
 bin/**
+models/**

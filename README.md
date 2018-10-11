@@ -9,3 +9,9 @@
 <div class="fig figcenter fighighlight">
   <img src="./imgs/multiple_lights.png" width="100%" >
 </div>
+
+
+## First 3D model!
+<div class="fig figcenter fighighlight">
+  <img src="./imgs/nanosuit.png" width="100%" >
+</div>

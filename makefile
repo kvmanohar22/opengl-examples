@@ -1,4 +1,4 @@
-LINKERS := -ldl -lglfw3 -lm -lX11 -lGL -lGLU -lpthread
+LINKERS := -ldl -lglfw3 -lm -lX11 -lGL -lGLU -lpthread -lassimp
 INCLUDE_DIRS := include 
 
 render_window: render_window.cpp
@@ -96,6 +96,10 @@ spotlight: 02.lighting/05.light_casters/spotlight.cpp
 multiple_lights: 02.lighting/06.multiple_lights/multiple_lights.cpp
 	@g++ -std=c++11 02.lighting/06.multiple_lights/multiple_lights.cpp src/glad.c -Wpragmas -I ${INCLUDE_DIRS} ${LINKERS} -o bin/multiple_lights
 	@echo "Built multiple lights showcase!"
+
+nanosuit: 03.models/nanosuit.cpp
+	@g++ -std=c++11 03.models/nanosuit.cpp src/glad.c -Wpragmas -I ${INCLUDE_DIRS} ${LINKERS} -o bin/nanosuit
+	@echo "Built nanosuit!"
 
 ex1: ex/ex1.cpp
 	@g++ ex/ex1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/ex1
