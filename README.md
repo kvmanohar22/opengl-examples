@@ -13,5 +13,5 @@
 
 ## First 3D model!
 <div class="fig figcenter fighighlight">
-  <img src="./imgs/nanosuit.png" width="100%" >
+  <img src="./imgs/nanosuit.gif" width="100%" >
 </div>

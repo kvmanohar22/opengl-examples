@@ -90,7 +90,7 @@ void scroll_callback(GLFWwindow *window, double dx, double dy) {
 }
 
 int main() {
-   int s_width = 1000, s_height = 1500;
+   int s_width = 1600, s_height = 2400;
    glfwInit();
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -134,6 +134,7 @@ int main() {
       shader.setmat4("view", view);
       
       glm::mat4 wmodel;
+      wmodel = glm::rotate(wmodel, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
       wmodel = glm::translate(wmodel, glm::vec3(0.0f, -1.75f, 0.0f));
       wmodel = glm::scale(wmodel, glm::vec3(0.2f));
       shader.setmat4("model", wmodel);
