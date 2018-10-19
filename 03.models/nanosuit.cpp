@@ -1,4 +1,4 @@
-#include <string>
+// #include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -90,7 +90,7 @@ void scroll_callback(GLFWwindow *window, double dx, double dy) {
 }
 
 int main() {
-   int s_width = 1600, s_height = 2400;
+   int s_width = 800, s_height = 1500;
    glfwInit();
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -117,29 +117,132 @@ int main() {
    Shader shader("shaders/03/shader.vs",
                  "shaders/03/shader.fs"
                  );
-   Model model("models/nanosuit/nanosuit.obj");
+   Shader light_shader("shaders/03/light_shader.vs",
+                       "shaders/03/light_shader.fs"
+                      );
+
+   float light_vertices[] = {
+      // vertices           // normal vectors
+      -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+      0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+      0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+      -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+      -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+
+      -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+      0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+      -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+      -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+
+      -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+      -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+      -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+      -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+
+      -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+      0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+      0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+      -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+      -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+
+      -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+      -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f
+   };
+
+   unsigned int VAO, VBO;
+   glGenVertexArrays(1, &VAO);
+   glGenBuffers(1, &VBO);
    
+   glBindVertexArray(VAO);
+
+   glBindBuffer(GL_ARRAY_BUFFER, VBO);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(light_vertices), &light_vertices[0], GL_STATIC_DRAW);
+
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)0);
+   glEnableVertexAttribArray(0);
+   glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void *)(3 * sizeof(float)));
+   glEnableVertexAttribArray(1);
+   glBindBuffer(GL_ARRAY_BUFFER, 0);
+   glBindVertexArray(0);
+
+   Model model("models/nanosuit/nanosuit.obj");
+
+   glm::vec3 light_ambience(0.05f);
+   glm::vec3 light_diffuse(0.8f);
+   glm::vec3 light_specular(0.5f);
+   glm::vec3 light_position(0.7f, 0.2f, 2.0f);
+
+   shader.use();
+   shader.setvec3("_dir_source.direction", glm::vec3(-0.2f, -1.0f, -0.3f));
+   shader.setvec3("_dir_source.ambient", glm::vec3(0.05f));
+   shader.setvec3("_dir_source.diffuse", glm::vec3(0.4f));
+   shader.setvec3("_dir_source.specular", glm::vec3(1.0f));
+
+   shader.setf("_point_source.constant", 1.0f);
+   shader.setf("_point_source.linear", 0.09);
+   shader.setf("_point_source.quadratic", 0.032);
+   shader.setvec3("_point_source.ambient", light_ambience);
+   shader.setvec3("_point_source.diffuse", light_diffuse);
+   shader.setvec3("_point_source.specular", light_specular);
+
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-      shader.use();
-      process_input(window);
 
       glm::mat4 projection;
       projection = glm::perspective(glm::radians(fov), (float)s_width/s_height, 0.1f, 100.0f);
       glm::mat4 view;
       view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
-      
+
+      // lighting
+      light_shader.use();
+      glBindVertexArray(VAO);
+      light_shader.setmat4("view", view);
+      light_shader.setmat4("projection", projection);
+      glm::mat4 _light_model;
+      float radius = 1.0f;
+      float posX = sin(glfwGetTime()) * radius;
+      float posZ = cos(glfwGetTime()) * radius;
+      _light_model = glm::translate(_light_model, glm::vec3(posX, 0, posZ));
+      light_position = glm::vec3(posX, 0, posZ);
+      _light_model = glm::scale(_light_model, glm::vec3(0.005f));
+      light_shader.setmat4("model", _light_model);
+      glDrawArrays(GL_TRIANGLES, 0, 36);
+      glBindVertexArray(0);
+
+      // crysis model
+      shader.use();
+      shader.setvec3("view_pos", camera_pos);
+      process_input(window);
+
       shader.setmat4("projection", projection);
       shader.setmat4("view", view);
-      
+      shader.setvec3("_point_source.position", light_position);
+
       glm::mat4 wmodel;
-      wmodel = glm::rotate(wmodel, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
+      // wmodel = glm::rotate(wmodel, (float)glfwGetTime(), glm::vec3(0.0f, 1.0f, 0.0f));
       wmodel = glm::translate(wmodel, glm::vec3(0.0f, -1.75f, 0.0f));
       wmodel = glm::scale(wmodel, glm::vec3(0.2f));
       shader.setmat4("model", wmodel);
-      
+
       model.draw(shader);
+
 
       glfwSwapBuffers(window);
       glfwPollEvents();

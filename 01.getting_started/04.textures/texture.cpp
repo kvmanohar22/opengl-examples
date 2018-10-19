@@ -172,6 +172,9 @@ int main() {
 
    glBindBuffer(GL_ARRAY_BUFFER, 0);
 
+   glActiveTexture(GL_TEXTURE0);
+   glBindTexture(GL_TEXTURE_2D, TEX);
+
    while (!glfwWindowShouldClose(window)) {
       glUseProgram(shader_program);
       glDrawArrays(GL_TRIANGLES, 0, 3);

@@ -42,7 +42,19 @@ public:
       this->textures = textures;
       this->indices  = indices;
 
-      this->setup_mesh();           
+      this->setup_mesh();
+   }
+
+   void pprint(int idx) {
+      std::cout << "Mesh #"
+                << idx
+                << " #vertices: "
+                << vertices.size()
+                << " #textures: "
+                << textures.size()
+                << " #indices: "
+                << indices.size()
+                << std::endl;
    }
 
    void draw(Shader shader) {
@@ -52,7 +64,7 @@ public:
 
       for (int i = 0; i < textures.size(); ++i) {
          glActiveTexture(GL_TEXTURE0 + i);
-         
+
          std::string number;
          std::string name = textures[i].type;
          if (name == "texture_diffuse") {
@@ -64,11 +76,16 @@ public:
                       << std::endl;
          }
 
-         std::string nname = "material." + name + number;
-         const char *uname = nname.c_str();
-         shader.seti(uname, i);
+         shader.seti((name + number).c_str(), i);
          glBindTexture(GL_TEXTURE_2D, textures[i].id);
       }
+
+      if (n_diffuse > 1)
+        shader.seti("texture_diffuse", 0);
+      if (n_specular > 1)
+        shader.seti("texture_specular", 1);
+      else
+        shader.seti("texture_specular", 0);
 
       glBindVertexArray(VAO);
       glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);

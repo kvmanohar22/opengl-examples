@@ -27,6 +27,7 @@ private:
    std::vector<texture> textures_loaded;
    
    void load_model(std::string path);
+   void pprint();
    void process_node(aiNode *node, const aiScene *scene);
    Mesh process_mesh(aiMesh *mesh, const aiScene *Scene);
    std::vector<texture> load_material_textures(
@@ -38,20 +39,28 @@ private:
 public:
    Model(const char *path) {
       load_model(path);
+      pprint();
    }
    void draw(Shader shader) {
       for (int i = 0; i < meshes.size(); ++i) {
          meshes[i].draw(shader);
-      }      
+      }
    }
    
 };
 
+void Model::pprint() {
+      std::cout << "Total number of meshes: "
+                << meshes.size()
+                << std::endl;
+      for (int i = 0; i < meshes.size(); ++i)
+            meshes[i].pprint(i+1);
+}
 
 void Model::load_model(std::string path) {
    Assimp::Importer importer;
    const aiScene *scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-   
+
    if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode) {
       std::cout << "Error Assimp"
                 << importer.GetErrorString()
@@ -69,7 +78,7 @@ void Model::process_node(aiNode *node, const aiScene *scene) {
       aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
       meshes.push_back(process_mesh(mesh, scene));
    }
-   
+
    // process all the children of the current node
    for (int i = 0; i < node->mNumChildren; ++i) {
       process_node(node->mChildren[i], scene);
@@ -80,7 +89,7 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene) {
    std::vector<vertex> vertices;
    std::vector<unsigned int> indices;
    std::vector<texture> textures;
-   
+
    // process all the vertices of the mesh
    for (int i = 0; i < mesh->mNumVertices; ++i) {
       vertex v;
@@ -91,14 +100,14 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene) {
       pos.y = mesh->mVertices[i].y;
       pos.z = mesh->mVertices[i].z;
       v.position = pos;
-      
+
       // Extract normals
       glm::vec3 norm;
       norm.x = mesh->mNormals[i].x;
       norm.y = mesh->mNormals[i].y;
       norm.z = mesh->mNormals[i].z;
       v.normal = norm;
-      
+
       // Extract texture positions
       glm::vec2 tex_pos;
       if (mesh->mTextureCoords[0]) {
@@ -110,14 +119,14 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene) {
       v.tex_pos = tex_pos;
       vertices.push_back(v);
    }
-   
+
    // process indices
    for (int i = 0; i < mesh->mNumFaces; ++i) {
       aiFace face = mesh->mFaces[i];
       for (int j = 0; j < face.mNumIndices; ++j)
          indices.push_back(face.mIndices[j]);
    }
-   
+
    // process textures (diffuse and specular)
    if (mesh->mMaterialIndex >= 0) {
       aiMaterial *material = scene->mMaterials[mesh->mMaterialIndex];
@@ -132,7 +141,7 @@ Mesh Model::process_mesh(aiMesh *mesh, const aiScene *scene) {
          material, aiTextureType_SPECULAR, "texture_specular");
       textures.insert(textures.end(), specular_maps.begin(), specular_maps.end());
    }
-  
+
    return Mesh(vertices, textures, indices);
 }
 
@@ -140,7 +149,7 @@ std::vector<texture> Model::load_material_textures(
    aiMaterial *material,
    aiTextureType type,
    std::string type_name) {
-   
+
    std::vector<texture> textures;
    for (int i = 0; i < material->GetTextureCount(type); ++i) {
       aiString str;
@@ -153,7 +162,7 @@ std::vector<texture> Model::load_material_textures(
             break;
          }
       }
-      
+
       if (!skip) {
          texture t;
          t.id = texture_from_file(str.C_Str(), directory);

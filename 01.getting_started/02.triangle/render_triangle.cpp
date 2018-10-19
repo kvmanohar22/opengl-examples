@@ -109,7 +109,7 @@ int main() {
    const char *shader_source = "#version 330 core \n"
                                "layout (location=0) in vec3 apos; \n"
                                "void main() { \n"
-                               "gl_Position = vec4(apos.x, apos.y, apos.z, 1.0); \n"
+                               "gl_Position = vec4(apos.x, apos.y, apos.z, 1.0); \n"      
                                "} \n";
    /*
       ** Compiling vertex shader **

@@ -270,14 +270,10 @@ float vertices[] = {
       glUniform3f(view_pos_loc, 0.0f, 0.6f, 6.0f);
 
       // Material properties
-      mat_amb_pos = glGetUniformLocation(shader_program_obj, "material.ambient");
-      glUniform3f(mat_amb_pos, 1.0f, 0.5f, 0.31f);
-      mat_dif_pos = glGetUniformLocation(shader_program_obj, "material.diffuse");
-      glUniform3f(mat_dif_pos, 1.0f, 0.5f, 0.31f);
-      mat_spc_pos = glGetUniformLocation(shader_program_obj, "material.specular");
-      glUniform3f(mat_spc_pos, 0.5f, 0.5f, 0.5f);
-      mat_shininess = glGetUniformLocation(shader_program_obj, "material.shininess");
-      glUniform1f(mat_shininess, 32.0f);
+      glUniform3f(glGetUniformLocation(shader_program_obj, "material.ambient"), 1.0f, 0.5f, 0.31f);
+      glUniform3f(glGetUniformLocation(shader_program_obj, "material.diffuse"), 1.0f, 0.5f, 0.31f);
+      glUniform3f(glGetUniformLocation(shader_program_obj, "material.specular"), 0.5f, 0.5f, 0.5f);
+      glUniform1f(glGetUniformLocation(shader_program_obj, "material.shininess"), 32.0f);
 
 
       glDrawArrays(GL_TRIANGLES, 0, 36);         

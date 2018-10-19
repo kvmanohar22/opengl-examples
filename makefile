@@ -5,16 +5,16 @@ render_window: render_window.cpp
 	@g++ render_window.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/render_window
 	@echo "Built rendering window"
 
-render_triangle: render_triangle.cpp
-	@g++ render_triangle.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/render_triangle
+render_triangle: 01.getting_started/02.triangle/render_triangle.cpp
+	@g++ 01.getting_started/02.triangle/render_triangle.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/render_triangle
 	@echo "Built rendering single triangle"
 
-render_rectangle: render_rectangle.cpp
-	@g++ render_rectangle.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/render_rectangle
+render_rectangle: 01.getting_started/02.triangle/render_rectangle.cpp
+	@g++ 01.getting_started/02.triangle/render_rectangle.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/render_rectangle
 	@echo "Built rendering rectangle"
 
-shaders: shaders.cpp
-	@g++ shaders.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/shaders
+shadersf: 01.getting_started/03.shaders/shaders.cpp
+	@g++ 01.getting_started/03.shaders/shaders.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/shaders_f
 	@echo "Built rendering shaders"
 
 more_attributes: more_attributes.cpp
@@ -25,12 +25,12 @@ shader_class: triangle_using_shader.cpp
 	@g++ triangle_using_shader.cpp src/glad.c shader.cpp -I ${INCLUDE_DIRS} ${LINKERS} -o bin/shader_class
 	@echo "Built rendering triangle using shader class"
 
-texture: texture.cpp
-	@g++ texture.cpp src/glad.c shader.cpp -I ${INCLUDE_DIRS} ${LINKERS} -o bin/texture
+texture: 01.getting_started/04.textures/texture.cpp
+	@g++ 01.getting_started/04.textures/texture.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/texture
 	@echo "Built texture generator"
 
-texture_units: texture_units.cpp
-	@g++ texture_units.cpp src/glad.c shader.cpp -I ${INCLUDE_DIRS} ${LINKERS} -o bin/texture_units
+texture_units: 01.getting_started/04.textures/texture_units.cpp
+	@g++ 01.getting_started/04.textures/texture_units.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/texture_units
 	@echo "Built texture units generator"
 
 transformations: transformations.cpp
@@ -57,20 +57,20 @@ camera3: camera3.cpp
 	@g++ camera3.cpp src/glad.c shader.cpp -pedantic -I ${INCLUDE_DIRS} ${LINKERS} -o bin/camera3
 	@echo "Built camera mouse dynamics!"
 
-colors: colors.cpp
-	@g++ colors.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/colors
+colors: 02.lighting/01.colors/colors.cpp
+	@g++ 02.lighting/01.colors/colors.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/colors
 	@echo "Built colors rendering!"
 
-colors2: colors2.cpp
-	@g++ colors2.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/colors2
+colors2: 02.lighting/01.colors/colors2.cpp
+	@g++ 02.lighting/01.colors/colors2.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/colors2
 	@echo "Built simulating different lighting conditions!"
 
 rotate_light_source: rotate_light_source.cpp
 	@g++ rotate_light_source.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/rotate_light_source
 	@echo "Built simulating rotation of light source"
 
-material1: 02.lighting/materials/material1.cpp
-	@g++ 02.lighting/materials/material1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/material1
+material1: 02.lighting/03.materials/material1.cpp
+	@g++ 02.lighting/03.materials/material1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/material1
 	@echo "Built simulating materials 1"
 
 diffuse_maps: 02.lighting/04.lighting_maps/diffuse_maps.cpp
