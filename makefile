@@ -101,6 +101,10 @@ nanosuit: 03.models/nanosuit.cpp
 	@g++ -std=c++11 03.models/nanosuit.cpp src/glad.c -Wpragmas -I ${INCLUDE_DIRS} ${LINKERS} -o bin/nanosuit
 	@echo "Built nanosuit!"
 
+adv_depth: 04.advanced/01.depth_testing/main.cpp
+	@g++ -std=c++11 04.advanced/01.depth_testing/main.cpp src/glad.c -Wpragmas -I ${INCLUDE_DIRS} ${LINKERS} -o bin/adv_depth
+	@echo "Built advanced depth testing"
+
 ex1: ex/ex1.cpp
 	@g++ ex/ex1.cpp src/glad.c -I ${INCLUDE_DIRS} ${LINKERS} -o bin/ex1
 	@echo "Built ex 1"
