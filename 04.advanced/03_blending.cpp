@@ -1,9 +1,20 @@
 /*
-  0. 
+  0. Blend equation:
+     c_res = c_src * F_src + c_des * F_des
+     
+     `c_src` is the source color vector (the current fragments' color)
+     `c_des` is the destination colro vector (the fragment which was already rendered)
+     `F_src` alpha of source
+     `F_des` alpha of destination
 
+     Initially nothing is rendered. when the first fragment is rendered (it becomes the source)
+     Setting glBlendFunc(GL_ONE, GL_ZERO); => properly renders
+     Setting glBlendFunc(GL_ZERO, GL_ONE); => nothing is rendered
 */
 
 #include <string>
+#include <vector>
+#include <map>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -133,10 +144,11 @@ int main() {
 
    // Enable the depth buffer
    glEnable(GL_DEPTH_TEST);
-
-   // Manually control the depth test function
-   glDepthFunc(GL_LESS); // default comparator
-   // glDepthFunc(GL_ALWAYS); 
+   glEnable(GL_BLEND);
+   // glBlendFunc(GL_ONE_MINUS_SRC_ALPHA, GL_SRC_ALPHA);
+   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+   // glBlendFunc(GL_ZERO, GL_ONE);
+   // glBlendFunc(GL_ONE, GL_ZERO);
 
    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetCursorPosCallback(window, mouse_callback);
@@ -267,7 +279,8 @@ int main() {
 
     unsigned int floor_texture = texture_from_file("../texture/metal.png");
     unsigned int container_texture = texture_from_file("../texture/marble.jpg");
-    unsigned int grass_texture = texture_from_file("../texture/grass.png");
+    // unsigned int grass_texture = texture_from_file("../texture/grass.png");
+    unsigned int grass_texture = texture_from_file("../texture/blending_transparent_window.png");
 
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -312,13 +325,27 @@ int main() {
       glBindTexture(GL_TEXTURE_2D, grass_texture);
       shader.setmat4("view", view);
       shader.setmat4("projection", projection);
-      for (int i = 0; i < vegetation.size(); ++i) {
-        model = glm::mat4();
-        model = glm::translate(model, vegetation[i]);
+      // for (int i = 0; i < vegetation.size(); ++i) {
+      //   glm::mat4 model = glm::mat4();
+      //   model = glm::translate(model, vegetation[i]);
+      //   shader.setmat4("model", model);
+      //   glDrawArrays(GL_TRIANGLES, 0, 6);
+      // }
+      // glBindVertexArray(0);
+
+      std::map<float, glm::vec3> sorted;
+      for (size_t i = 0; i < vegetation.size(); ++i) {
+        float distance = glm::length(camera.position - vegetation[i]);
+        sorted[distance] = vegetation[i];
+      }
+
+      for(std::map<float, glm::vec3>::reverse_iterator itr = sorted.rbegin();
+        itr != sorted.rend(); ++itr) {
+        glm::mat4 model = glm::mat4();
+        model = glm::translate(model, itr->second);
         shader.setmat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 6);
       }
-      glBindVertexArray(0);
 
       glfwSwapBuffers(window);
       glfwPollEvents();
