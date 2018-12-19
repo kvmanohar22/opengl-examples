@@ -38,7 +38,7 @@ const char *vertex_shader_src1 = "#version 330 core\n"
                             "void main() {\n"
                             "gl_Position = projection * view * model * vec4(ipos, 1.0f);\n"
                             "frag_pos = vec3(model * vec4(ipos, 1.0f));\n"
-                            "norm = vec3(model * vec4(inorm, 1.0f));\n"
+                            "norm =  mat3(transpose(inverse(model))) * inorm;"
                             "tex = itex;\n"
                             "}\n";
 
@@ -273,7 +273,8 @@ float vertices[] = {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    int width, height, nchannels;
-   unsigned char *data = stbi_load("imgs/container2.png", &width, &height, &nchannels, 0);
+   unsigned char *data;
+   data = stbi_load("../imgs/container2.png", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);      
@@ -292,7 +293,7 @@ float vertices[] = {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-   data = stbi_load("imgs/container2_specular.png", &width, &height, &nchannels, 0);
+   data = stbi_load("../imgs/container2_specular.png", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);      

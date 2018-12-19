@@ -106,7 +106,7 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    int width, height, nchannels;
-   unsigned char *data = stbi_load("imgs/container.jpg", &width, &height, &nchannels, 0);
+   unsigned char *data = stbi_load("../imgs/container.jpg", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
@@ -139,7 +139,7 @@ int main() {
       glClear(GL_COLOR_BUFFER_BIT);
 
       trans = glm::translate(trans, glm::vec3(0.0, 0.0, 0.0));
-      trans = glm::rotate(trans, glm::radians((float)glfwGetTime()/(float)100.0), glm::vec3(0.0f, 0.0f, 1.0f));
+      trans = glm::rotate(trans, glm::radians((float)glfwGetTime()/(float)1.0), glm::vec3(0.0f, 0.0f, 1.0f));
 
       glUseProgram(shader_program);
       unsigned int transform_loc = glGetUniformLocation(shader_program, "transform");
@@ -154,6 +154,6 @@ int main() {
    glDeleteVertexArrays(1, &VAO);
    glDeleteBuffers(1, &VBO);
    glfwTerminate();
-   
+
    return 0;
 }

@@ -190,7 +190,8 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    int width, height, nchannels;
-   unsigned char *data = stbi_load("imgs/container.jpg", &width, &height, &nchannels, 0);
+   unsigned char *data;
+   data = stbi_load("../imgs/container.jpg", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
@@ -209,7 +210,7 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    stbi_set_flip_vertically_on_load(true); 
-   data = stbi_load("imgs/awesomeface.png", &width, &height, &nchannels, 0);
+   data = stbi_load("../imgs/awesomeface.png", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
@@ -261,10 +262,11 @@ int main() {
          glm::mat4 model;
          model = glm::translate(model, cube_positions[i]);
 
-         float radius = 50.0f;
-         float camX = sin(glfwGetTime()) * radius;
-         float camZ = cos(glfwGetTime()) * radius;
          glm::mat4 view;
+         // DOUBT
+         // I don't quite understand how the second arguement ensures that
+         // wherever the camera is placed it keeps looking at the same position
+         //--
          view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
 
          int model_loc = glGetUniformLocation(shader_program, "model");

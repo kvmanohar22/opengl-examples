@@ -1,4 +1,9 @@
-// #include <string>
+/*
+  0. 
+
+*/
+
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -17,22 +22,19 @@
 #include <shader.hpp>
 #include <mesh.hpp>
 #include <model.hpp>
+#include <camera.hpp>
 
 // for adjusting camera speed
 float delta_time = 0.0f;
 float last_frame = 0.0f;
 
-// for camera related positions
-glm::vec3 camera_pos = glm::vec3(0.0f, 0.0f, 3.0f);
-glm::vec3 camera_front = glm::vec3(0.0f, 0.0f, -1.0f);
-glm::vec3 camera_up = glm::vec3(0.0f, 1.0f, 0.0f);
-
 // callbacks
 bool first_mouse = true;
-double yaw = -90.0f;
-double pitch = 0.0f;
 double x_last = 400.0f;
 double y_last = 300.0f;
+
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
+
 void mouse_callback(GLFWwindow *window, double x_new, double y_new) {
    if (first_mouse) {
       x_last = x_new;
@@ -44,23 +46,7 @@ void mouse_callback(GLFWwindow *window, double x_new, double y_new) {
    x_last = x_new;
    y_last = y_new;
    
-   float sensitivity = 0.05;
-   dx *= sensitivity;
-   dy *= sensitivity;
-   
-   yaw += dx;
-   pitch += dy;
-   
-   if (pitch > 89.0f)
-      pitch = 89.0f;
-   if (pitch < -89.0f)
-      pitch = -89.0f;
-   
-   glm::vec3 front;
-   front.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-   front.y = sin(glm::radians(pitch));
-   front.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-   camera_front = glm::normalize(front);   
+   camera.process_mouse_movement(dx, dy);
 }
 
 void process_input(GLFWwindow *window) {
@@ -70,23 +56,17 @@ void process_input(GLFWwindow *window) {
    float camera_speed = 2.5f * delta_time;
 
    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-      camera_pos += camera_speed * camera_front;
+      camera.process_keyboard(FORWARD, delta_time);
    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-      camera_pos -= camera_speed * camera_front;
+      camera.process_keyboard(BACKWARD, delta_time);
    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-      camera_pos -= glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+      camera.process_keyboard(LEFT, delta_time);
    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-      camera_pos += glm::normalize(glm::cross(camera_front, camera_up)) * camera_speed;
+      camera.process_keyboard(RIGHT, delta_time);
 }
 
-float fov = 45.0f;
 void scroll_callback(GLFWwindow *window, double dx, double dy) {
-   if (fov >= 1.0f && fov <= 45.0f)
-      fov -= dy;
-   if (fov < 1.0f)
-      fov = 1.0f;
-   if (fov > 45.0f)
-      fov = 45.0f;
+  camera.process_scroll(dy);
 }
 
 unsigned int texture_from_file(
@@ -97,8 +77,6 @@ unsigned int texture_from_file(
    unsigned int texture_id;
    glGenTextures(1, &texture_id);
    glBindTexture(GL_TEXTURE_2D, texture_id);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
@@ -113,6 +91,15 @@ unsigned int texture_from_file(
       else if (n_channels == 4)
          format = GL_RGBA;
 
+       if (format == GL_RGBA) {
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+       } else {
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+       }
+
+
       glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
    } else {
@@ -126,7 +113,7 @@ unsigned int texture_from_file(
 }
 
 int main() {
-   int s_width = 1280, s_height = 720;
+   int s_width = 1600, s_height = 720;
    glfwInit();
    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
@@ -137,6 +124,7 @@ int main() {
       glfwTerminate();
       return -1;
    }
+
    glfwMakeContextCurrent(window);
    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
       std::cout << "Failed to initialize GLAD" << std::endl;
@@ -145,16 +133,17 @@ int main() {
 
    // Enable the depth buffer
    glEnable(GL_DEPTH_TEST);
-//    glDepthFunc(GL_ALWAYS); 
-   glDepthFunc(GL_LESS); 
 
-   glfwMakeContextCurrent(window);
+   // Manually control the depth test function
+   glDepthFunc(GL_LESS); // default comparator
+   // glDepthFunc(GL_ALWAYS); 
+
    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
    glfwSetCursorPosCallback(window, mouse_callback);
    glfwSetScrollCallback(window, scroll_callback);
 
-   Shader shader("shaders/04/shader.vs",
-                 "shaders/04/shader.fs"
+   Shader shader("../shaders/04.advanced/04_blending.vs",
+                 "../shaders/04.advanced/04_blending.fs"
                  );
 
     float cube_vertices[] = {
@@ -204,15 +193,34 @@ int main() {
 
     float plane_vertices[] = {
         // positions          // texture Coords
-         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-        -5.0f, -0.5f,  5.0f,  0.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
+         5.0f, -0.52f,  5.0f,  2.0f, 0.0f,
+        -5.0f, -0.52f,  5.0f,  0.0f, 0.0f,
+        -5.0f, -0.52f, -5.0f,  0.0f, 2.0f,
 
-         5.0f, -0.5f,  5.0f,  2.0f, 0.0f,
-        -5.0f, -0.5f, -5.0f,  0.0f, 2.0f,
-         5.0f, -0.5f, -5.0f,  2.0f, 2.0f
+         5.0f, -0.52f,  5.0f,  2.0f, 0.0f,
+        -5.0f, -0.52f, -5.0f,  0.0f, 2.0f,
+         5.0f, -0.52f, -5.0f,  2.0f, 2.0f
     };
 
+    float grass_vertices[] = {
+        // positions          // texture Coords
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+        0.0f, -0.5f,  0.0f,  0.0f,  1.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+
+        0.0f,  0.5f,  0.0f,  0.0f,  0.0f,
+        1.0f, -0.5f,  0.0f,  1.0f,  1.0f,
+        1.0f,  0.5f,  0.0f,  1.0f,  0.0f
+    };
+
+   std::vector<glm::vec3> vegetation;
+   vegetation.push_back(glm::vec3(-1.5f, 0.0f, -0.48f));
+   vegetation.push_back(glm::vec3( 1.5f, 0.0f,  0.51f));
+   vegetation.push_back(glm::vec3( 0.0f, 0.0f,  0.70f));
+   vegetation.push_back(glm::vec3(-0.3f, 0.0f, -2.30f));
+   vegetation.push_back(glm::vec3( 0.5f, 0.0f, -0.60f));
+
+   // containers
    unsigned int VAO_container, VBO_container;
    glGenVertexArrays(1, &VAO_container);
    glGenBuffers(1, &VBO_container);
@@ -226,6 +234,7 @@ int main() {
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindVertexArray(0);
 
+   // floor
    unsigned int VAO_plane, VBO_plane;
    glGenVertexArrays(1, &VAO_plane);
    glGenBuffers(1, &VBO_plane);
@@ -239,11 +248,26 @@ int main() {
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindVertexArray(0);
 
+   // grass texture
+   unsigned int VAO_grass, VBO_grass;
+   glGenVertexArrays(1, &VAO_grass);
+   glGenBuffers(1, &VBO_grass);
+   glBindVertexArray(VAO_grass);
+   glBindBuffer(GL_ARRAY_BUFFER, VBO_grass);
+   glBufferData(GL_ARRAY_BUFFER, sizeof(grass_vertices), &grass_vertices, GL_STATIC_DRAW);
+   glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)0);
+   glEnableVertexAttribArray(0);
+   glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void *)(3 * sizeof(float)));
+   glEnableVertexAttribArray(1);
+   glBindBuffer(GL_ARRAY_BUFFER, 0);
+   glBindVertexArray(0);
+
     shader.use();
     shader.seti("texture_sampler", 0);
 
-    unsigned int floor_texture = texture_from_file("texture/metal.png");
-    unsigned int container_texture = texture_from_file("texture/marble.jpg");
+    unsigned int floor_texture = texture_from_file("../texture/metal.png");
+    unsigned int container_texture = texture_from_file("../texture/marble.jpg");
+    unsigned int grass_texture = texture_from_file("../texture/grass.png");
 
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -251,11 +275,20 @@ int main() {
         process_input(window);
 
       glm::mat4 projection;
-      projection = glm::perspective(glm::radians(fov), (float)s_width/s_height, 0.1f, 100.0f);
-      glm::mat4 view;
-      view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
+      projection = glm::perspective(glm::radians(camera.zoom), (float)s_width/s_height, 0.1f, 100.0f);
+      glm::mat4 view = camera.get_view_matrix();
 
       shader.use();
+
+      // floor
+      glBindVertexArray(VAO_plane);
+      glActiveTexture(GL_TEXTURE0);
+      glBindTexture(GL_TEXTURE_2D, floor_texture);
+      shader.setmat4("view", view);
+      shader.setmat4("projection", projection);
+      shader.setmat4("model", glm::mat4());
+      glDrawArrays(GL_TRIANGLES, 0, 6);
+      glBindVertexArray(0);
 
       // containers
       glBindVertexArray(VAO_container);
@@ -273,14 +306,18 @@ int main() {
       glDrawArrays(GL_TRIANGLES, 0, 36);
       glBindVertexArray(0);
 
-      // floor
-      glBindVertexArray(VAO_plane);
+      // grass
+      glBindVertexArray(VAO_grass);
       glActiveTexture(GL_TEXTURE0);
-      glBindTexture(GL_TEXTURE_2D, floor_texture);
+      glBindTexture(GL_TEXTURE_2D, grass_texture);
       shader.setmat4("view", view);
       shader.setmat4("projection", projection);
-      shader.setmat4("model", glm::mat4());
-      glDrawArrays(GL_TRIANGLES, 0, 6);
+      for (int i = 0; i < vegetation.size(); ++i) {
+        model = glm::mat4();
+        model = glm::translate(model, vegetation[i]);
+        shader.setmat4("model", model);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
+      }
       glBindVertexArray(0);
 
       glfwSwapBuffers(window);

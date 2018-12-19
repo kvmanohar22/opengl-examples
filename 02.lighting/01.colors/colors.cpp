@@ -232,7 +232,7 @@ int main() {
       light_loc = glGetUniformLocation(shader_program_obj, "light_color");
       glUniform3f(light_loc, 1.0f, 1.0f, 1.0f); 
 
-      glDrawArrays(GL_TRIANGLES, 0, 36);         
+      glDrawArrays(GL_TRIANGLES, 0, 36);
       glBindVertexArray(0);
 
       // IO / Swap buffers

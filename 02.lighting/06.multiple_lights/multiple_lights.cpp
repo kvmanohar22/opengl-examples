@@ -113,11 +113,11 @@ int main() {
    glfwSetScrollCallback(window, scroll_callback);
 
    // Generate shader programs
-   Shader obj_shader("shaders/02/multiple_lights/obj_shader.vs",
-                     "shaders/02/multiple_lights/obj_shader.fs"
+   Shader obj_shader("../shaders/02/multiple_lights/obj_shader.vs",
+                     "../shaders/02/multiple_lights/obj_shader.fs"
                     );
-   Shader light_shader("shaders/02/multiple_lights/light_shader.vs",
-                       "shaders/02/multiple_lights/light_shader.fs"
+   Shader light_shader("../shaders/02/multiple_lights/light_shader.vs",
+                       "../shaders/02/multiple_lights/light_shader.fs"
                       );
 
    float vertices[] = {
@@ -226,7 +226,8 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    int width, height, nchannels;
-   unsigned char *data = stbi_load("imgs/container2.png", &width, &height, &nchannels, 0);
+   unsigned char *data;
+   data = stbi_load("../imgs/container2.png", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);      
@@ -245,7 +246,7 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-   data = stbi_load("imgs/container2_specular.png", &width, &height, &nchannels, 0);
+   data = stbi_load("../imgs/container2_specular.png", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);      

@@ -14,8 +14,8 @@ const char *vertex_shader_src = "#version 330 core\n"
                             "layout (location = 0) in vec3 ipos;\n"
                             "layout (location = 1) in vec2 itex;\n"
                             "out vec2 tex;\n"                              
-                            "uniform mat4 view;\n"
                             "uniform mat4 model;\n"
+                            "uniform mat4 view;\n"
                             "uniform mat4 projection;\n"
                             "void main() {\n"
                             "gl_Position = projection * view * model * vec4(ipos, 1.0f);\n"
@@ -162,7 +162,8 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    int width, height, nchannels;
-   unsigned char *data = stbi_load("imgs/container.jpg", &width, &height, &nchannels, 0);
+   unsigned char *data;
+   data = stbi_load("../imgs/container.jpg", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
@@ -181,7 +182,7 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    stbi_set_flip_vertically_on_load(true); 
-   data = stbi_load("imgs/awesomeface.png", &width, &height, &nchannels, 0);
+   data = stbi_load("../imgs/awesomeface.png", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
@@ -222,9 +223,6 @@ int main() {
    view = glm::translate(view, glm::vec3(0.0f, 0.0f, -15.0f));
    glm::mat4 projection;
    projection = glm::perspective(glm::radians(45.0f), (float)s_width/s_height, 0.1f, 100.0f);
-   glm::mat4 scale;
-   scale = glm::scale(scale, glm::vec3(2.5, 2.5, 2.5)); 
-
 
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -233,6 +231,7 @@ int main() {
       for (int i = 0; i < 10; ++i) {
          glm::mat4 model;
          model = glm::translate(model, cube_positions[i]);
+         model = glm::scale(model, glm::vec3(1));
 
          int model_loc = glGetUniformLocation(shader_program, "model");
          glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
@@ -253,4 +252,3 @@ int main() {
 
    return 0;     
 }
-

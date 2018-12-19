@@ -162,7 +162,8 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    int width, height, nchannels;
-   unsigned char *data = stbi_load("imgs/container.jpg", &width, &height, &nchannels, 0);
+   unsigned char *data;
+   data = stbi_load("../imgs/container.jpg", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
@@ -181,7 +182,7 @@ int main() {
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
    stbi_set_flip_vertically_on_load(true); 
-   data = stbi_load("imgs/awesomeface.png", &width, &height, &nchannels, 0);
+   data = stbi_load("../imgs/awesomeface.png", &width, &height, &nchannels, 0);
    if (data) {
       glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
       glGenerateMipmap(GL_TEXTURE_2D);
@@ -235,7 +236,9 @@ int main() {
          float camX = sin(glfwGetTime()) * radius;
          float camZ = cos(glfwGetTime()) * radius;
          glm::mat4 view;
-         view = glm::lookAt(glm::vec3(camX, 0, camZ), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+         view = glm::lookAt(glm::vec3(camX, 0, camZ), 
+                            glm::vec3(0.0f, 0.0f, 0.0f), 
+                            glm::vec3(0.0f, 1.0f, 0.0f));
 
          int model_loc = glGetUniformLocation(shader_program, "model");
          glUniformMatrix4fv(model_loc, 1, GL_FALSE, glm::value_ptr(model));
