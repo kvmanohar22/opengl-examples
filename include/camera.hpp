@@ -19,7 +19,7 @@ const float YAW         = -90.0f;
 const float PITCH       = 0.0f;
 const float SPEED       = 2.5f;
 const float SENSITIVITY = 0.1f;
-const float ZOOM        = 75.0f; 
+const float ZOOM        = 45.0f;
 
 class Camera {
 public:
@@ -52,6 +52,7 @@ public:
 	}
 
 	glm::mat4 get_view_matrix() {
+		// TODO: how to make sure to rotate the camera in a circular motion
 		return glm::lookAt(position, position + front, up);
 	}
 
@@ -65,6 +66,10 @@ public:
 			position += right * velocity;
 		else if (direction == LEFT)
 			position -= right * velocity;
+	}
+
+	void update_position(glm::vec3 position) {
+		this->position = position;
 	}
 
 	void process_mouse_movement(float dx, float dy) {

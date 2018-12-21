@@ -1,6 +1,9 @@
 include/glm/**
 include/assim**
+CMakeFiles/**
+CMakeCache.txt
 bin/**
+tmp/**
 models/**
 *.swp
 build/**
