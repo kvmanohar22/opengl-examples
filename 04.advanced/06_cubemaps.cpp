@@ -1,6 +1,7 @@
 /* skybox: - this is a 1x1x1 cube centered at the origin
  *         - while applying the texture we have to specify the position of the 
- *              cube coordinates to render the objects
+ *              cube coordinates to render the objects and these will be treated
+ *              as directional vector
  *         - to make optimized rendering, render all hte objects first and then
  *              render hte ksybox at last
  *         - while rendering the skybox make sure that the depth of each fragment
@@ -22,7 +23,6 @@
 
 #include "shader.hpp"
 #include "camera.hpp"
-// #include "utils.hpp"
 
 #include <string>
 #include <fstream>
@@ -116,76 +116,76 @@ int main() {
    glfwSetScrollCallback(window, scroll_callback);
 
    Shader shader_skybox("../shaders/04.advanced/06_skybox.vs",
-                 		"../shaders/04.advanced/06_skybox.fs"
-                 		);
+                        "../shaders/04.advanced/06_skybox.fs"
+                        );
 
    // // for normal object placement
    // Shader shader_box("../shaders/04.advanced/06_box.vs",
-   //               	 "../shaders/04.advanced/06_box.fs"
-   //               	);
+   //                    "../shaders/04.advanced/06_box.fs"
+   //                   );
 
    // to achieve reflective property
    Shader shader_box("../shaders/04.advanced/06_box_reflective.vs",
-                 	 "../shaders/04.advanced/06_box_reflective.fs"
-                 	);
+                     "../shaders/04.advanced/06_box_reflective.fs"
+                    );
 
-	std::vector<std::string> faces {
-		"../imgs/skybox_nature/right.jpg",
-		"../imgs/skybox_nature/left.jpg",
-		"../imgs/skybox_nature/top.jpg",
-		"../imgs/skybox_nature/bottom.jpg",
-		"../imgs/skybox_nature/front.jpg",
-		"../imgs/skybox_nature/back.jpg"
-	};
+    std::vector<std::string> faces {
+        "../imgs/skybox_nature/right.jpg",
+        "../imgs/skybox_nature/left.jpg",
+        "../imgs/skybox_nature/top.jpg",
+        "../imgs/skybox_nature/bottom.jpg",
+        "../imgs/skybox_nature/front.jpg",
+        "../imgs/skybox_nature/back.jpg"
+    };
 
-	float skybox_vertices[] = {
-	    // positions          
-	    -1.0f,  1.0f, -1.0f,
-	    -1.0f, -1.0f, -1.0f,
-	     1.0f, -1.0f, -1.0f,
-	     1.0f, -1.0f, -1.0f,
-	     1.0f,  1.0f, -1.0f,
-	    -1.0f,  1.0f, -1.0f,
+    float skybox_vertices[] = {
+        // positions          
+        -1.0f,  1.0f, -1.0f,
+        -1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
 
-	    -1.0f, -1.0f,  1.0f,
-	    -1.0f, -1.0f, -1.0f,
-	    -1.0f,  1.0f, -1.0f,
-	    -1.0f,  1.0f, -1.0f,
-	    -1.0f,  1.0f,  1.0f,
-	    -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
 
-	     1.0f, -1.0f, -1.0f,
-	     1.0f, -1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f, -1.0f,
-	     1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
 
-	    -1.0f, -1.0f,  1.0f,
-	    -1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f, -1.0f,  1.0f,
-	    -1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f,
+        -1.0f, -1.0f,  1.0f,
 
-	    -1.0f,  1.0f, -1.0f,
-	     1.0f,  1.0f, -1.0f,
-	     1.0f,  1.0f,  1.0f,
-	     1.0f,  1.0f,  1.0f,
-	    -1.0f,  1.0f,  1.0f,
-	    -1.0f,  1.0f, -1.0f,
+        -1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f, -1.0f,
+         1.0f,  1.0f,  1.0f,
+         1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f,  1.0f,
+        -1.0f,  1.0f, -1.0f,
 
-	    -1.0f, -1.0f, -1.0f,
-	    -1.0f, -1.0f,  1.0f,
-	     1.0f, -1.0f, -1.0f,
-	     1.0f, -1.0f, -1.0f,
-	    -1.0f, -1.0f,  1.0f,
-	     1.0f, -1.0f,  1.0f
-	};	
+        -1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f, -1.0f,
+         1.0f, -1.0f, -1.0f,
+        -1.0f, -1.0f,  1.0f,
+         1.0f, -1.0f,  1.0f
+    };  
 
 
 /*    use this with normal rendering
-	  float cube_vertices[] = {
+      float cube_vertices[] = {
         // positions          // texture Coords
         -0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
          0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
@@ -231,50 +231,50 @@ int main() {
     };
 */
 
-	float cube_vertices[] = {
-		// position           // normals
-	    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
-	     0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-	     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-	     0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-	    -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
-	    -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+    float cube_vertices[] = {
+        // position           // normals
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f,
+         0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+         0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+        -0.5f,  0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
+        -0.5f, -0.5f, -0.5f,  0.0f,  0.0f, -1.0f, 
 
-	    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	     0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	     0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	    -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
-	    -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+         0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f,  0.0f, 1.0f,
 
-	    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	    -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	    -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
-	    -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
-	    -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f, -1.0f,  0.0f,  0.0f,
 
-	     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	     0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	     0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
-	     0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
-	     0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  1.0f,  0.0f,  0.0f,
 
-	    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	     0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
-	     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	     0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	    -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
-	    -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+         0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f,  0.5f,  0.0f, -1.0f,  0.0f,
+        -0.5f, -0.5f, -0.5f,  0.0f, -1.0f,  0.0f,
 
-	    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	     0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
-	     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	     0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	    -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
-	    -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f		
-	};
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+         0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f,  0.5f,  0.0f,  1.0f,  0.0f,
+        -0.5f,  0.5f, -0.5f,  0.0f,  1.0f,  0.0f        
+    };
 
    // skybox
    unsigned int VAO, VBO;
@@ -310,19 +310,19 @@ int main() {
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindVertexArray(0);
 
-	shader_skybox.use();
-	shader_skybox.seti("skybox", 0);
+    shader_skybox.use();
+    shader_skybox.seti("skybox", 0);
 
-	// this is for normal rendering
-	// shader_box.use();
-	// shader_box.seti("texture_sampler", 0);
+    // this is for normal rendering
+    // shader_box.use();
+    // shader_box.seti("texture_sampler", 0);
 
-	// for reflective rendering
-	shader_box.use();
-	shader_box.seti("skybox", 0);
-	
-	unsigned int cubemap_texture = load_cubemap(faces);
-	unsigned int bbox_texture = texture_from_file("../texture/marble.jpg");
+    // for reflective rendering
+    shader_box.use();
+    shader_box.seti("skybox", 0);
+
+    unsigned int cubemap_texture = load_cubemap(faces);
+    unsigned int bbox_texture = texture_from_file("../texture/marble.jpg");
 
    while (!glfwWindowShouldClose(window)) {
 
@@ -338,9 +338,9 @@ int main() {
 
       glm::mat4 projection;
       projection = glm::perspective(glm::radians(camera.zoom), 
-      								(float)s_width/s_height, 
-      								0.1f, 100.0f);
-      glm::mat4 view = camera.get_view_matrix();
+                                    (float)s_width/s_height, 
+                                    0.1f, 100.0f);
+      glm::mat4 view = camera.get_view_matrix(MOVING);
 
       // render container
       shader_box.use();
@@ -360,7 +360,7 @@ int main() {
       // render skybox
       glDepthFunc(GL_LEQUAL);
       shader_skybox.use();
-      view = glm::mat4(glm::mat3(camera.get_view_matrix()));
+      view = glm::mat4(glm::mat3(camera.get_view_matrix(MOVING)));
       shader_skybox.setmat4("view", view);
       shader_skybox.setmat4("projection", projection);
       glBindVertexArray(VAO);
@@ -420,31 +420,31 @@ unsigned int texture_from_file(
 
 /**************************** LOAD SKYBOX FROM FILE ****************************/
 unsigned int load_cubemap(std::vector<std::string> faces) {
-	unsigned int texture_id;
-	glGenTextures(1, &texture_id);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
+    unsigned int texture_id;
+    glGenTextures(1, &texture_id);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, texture_id);
 
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-	int width, height, n_channels;
-	for (size_t i = 0; i < faces.size(); ++i) {
-		unsigned char *data;
-		data = stbi_load(faces[i].c_str(), &width, &height, &n_channels, 0);
-		if (data) {
-			glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
-						 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
-						);
-			stbi_image_free(data);
-		} else {
-			std::cout << "Couldn't load the texture cube map path: "
-					  << faces[i]
-					  << std::endl;
-		}
-	}
+    int width, height, n_channels;
+    for (size_t i = 0; i < faces.size(); ++i) {
+        unsigned char *data;
+        data = stbi_load(faces[i].c_str(), &width, &height, &n_channels, 0);
+        if (data) {
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i,
+                         0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data
+                        );
+            stbi_image_free(data);
+        } else {
+            std::cout << "Couldn't load the texture cube map path: "
+                      << faces[i]
+                      << std::endl;
+        }
+    }
 
-	return texture_id;
+    return texture_id;
 }
