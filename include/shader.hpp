@@ -109,9 +109,17 @@ public:
          this->_id, name), 1, GL_FALSE, glm::value_ptr(val));
    }
    
-   void setvec3(const char *name, const glm::vec3 val) {
+   void setvec3(const char *name, const glm::vec3 val) const {
       glUniform3fv(glGetUniformLocation(
          this->_id, name), 1, glm::value_ptr(val));
+   }
+
+   void setuniform(const char *name, const int binding_point) const {
+      glUniformBlockBinding(this->_id, 
+                            glGetUniformBlockIndex(this->_id, 
+                                                   name),
+                            binding_point
+                            );
    }
 };
 
