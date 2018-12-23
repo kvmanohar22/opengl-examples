@@ -14,6 +14,14 @@
  * gl_FrontFacing : 
  * gl_FrontDepth  : 
  *
+ * LESSON:
+ *          1. while setting the model matrix, be careful on what it is initialized with
+ *          eg:
+ *              model = glm::translate(model, point0);
+ *              // what was the original model at ?
+ *              BETTER WAY IS:
+ *              model = glm::mat4();
+ *              model = glm::translate(model, point0);
  */
 
 #include "shader.hpp"
@@ -29,6 +37,7 @@
 #include <GLFW/glfw3.h>
 
 #include <glm/glm/glm.hpp>
+#include <glm/glm/ext.hpp>
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
 
@@ -46,7 +55,7 @@ bool first_mouse = true;
 double x_last = 400.0f;
 double y_last = 300.0f;
 
-Camera camera(glm::vec3(0.0f, 0.0f, 10.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 void mouse_callback(GLFWwindow *window, double x_new, double y_new) {
     if (first_mouse) {
@@ -209,7 +218,8 @@ int main() {
         glBindVertexArray(VAO);
 
         shader1.use();
-        model = glm::translate(model, glm::vec3(-10.95f, 0.75f, 0.0f));
+        model = glm::mat4();
+        model = glm::translate(model, glm::vec3(-0.75f, 0.75f, 0.0f));
         shader1.setmat4("model", model);
         glDrawArrays(GL_TRIANGLES, 0, 36);
 
@@ -234,7 +244,7 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     }
-   
+
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
 
