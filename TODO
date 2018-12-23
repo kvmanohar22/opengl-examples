@@ -1,0 +1,4 @@
+* winding order in face culling is not clear
+* how can the above be used in computing the correct normals
+* reformat utils
+
