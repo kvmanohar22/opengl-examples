@@ -11,8 +11,8 @@
 #include <glm/glm/gtc/matrix_transform.hpp>
 #include <glm/glm/gtc/type_ptr.hpp>
 
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>                
+// #define STB_IMAGE_IMPLEMENTATION
+// #include <stb_image.h>                
 
 #include <shader.hpp>
 #include <mesh.hpp>
@@ -114,11 +114,11 @@ int main() {
    glfwSetCursorPosCallback(window, mouse_callback);
    glfwSetScrollCallback(window, scroll_callback);
 
-   Shader shader("shaders/03/shader.vs",
-                 "shaders/03/shader.fs"
+   Shader shader("../shaders/03/shader.vs",
+                 "../shaders/03/shader.fs"
                  );
-   Shader light_shader("shaders/03/light_shader.vs",
-                       "shaders/03/light_shader.fs"
+   Shader light_shader("../shaders/03/light_shader.vs",
+                       "../shaders/03/light_shader.fs"
                       );
 
    float light_vertices[] = {
@@ -182,7 +182,7 @@ int main() {
    glBindBuffer(GL_ARRAY_BUFFER, 0);
    glBindVertexArray(0);
 
-   Model model("models/nanosuit/nanosuit.obj");
+   Model model("../models/nanosuit/nanosuit.obj");
 
    glm::vec3 light_ambience(0.05f);
    glm::vec3 light_diffuse(0.8f);
@@ -210,21 +210,21 @@ int main() {
       glm::mat4 view;
       view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
 
-      // lighting
-      light_shader.use();
-      glBindVertexArray(VAO);
-      light_shader.setmat4("view", view);
-      light_shader.setmat4("projection", projection);
-      glm::mat4 _light_model;
-      float radius = 1.0f;
-      float posX = sin(glfwGetTime()) * radius;
-      float posZ = cos(glfwGetTime()) * radius;
-      _light_model = glm::translate(_light_model, glm::vec3(posX, 0, posZ));
-      light_position = glm::vec3(posX, 0, posZ);
-      _light_model = glm::scale(_light_model, glm::vec3(0.005f));
-      light_shader.setmat4("model", _light_model);
-      glDrawArrays(GL_TRIANGLES, 0, 36);
-      glBindVertexArray(0);
+      // // lighting
+      // light_shader.use();
+      // glBindVertexArray(VAO);
+      // light_shader.setmat4("view", view);
+      // light_shader.setmat4("projection", projection);
+      // glm::mat4 _light_model;
+      // float radius = 1.0f;
+      // float posX = sin(glfwGetTime()) * radius;
+      // float posZ = cos(glfwGetTime()) * radius;
+      // _light_model = glm::translate(_light_model, glm::vec3(posX, 0, posZ));
+      // light_position = glm::vec3(posX, 0, posZ);
+      // _light_model = glm::scale(_light_model, glm::vec3(0.005f));
+      // light_shader.setmat4("model", _light_model);
+      // glDrawArrays(GL_TRIANGLES, 0, 36);
+      // glBindVertexArray(0);
 
       // crysis model
       shader.use();
