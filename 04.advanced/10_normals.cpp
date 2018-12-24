@@ -1,4 +1,4 @@
-// #include <string>
+#include <string>
 #include <fstream>
 #include <sstream>
 #include <iostream>
@@ -110,10 +110,19 @@ int main() {
    glfwSetCursorPosCallback(window, mouse_callback);
    glfwSetScrollCallback(window, scroll_callback);
 
-   Shader shader("../shaders/04.advanced/09_explode.vs",
-                 "../shaders/04.advanced/09_explode.fs",
-                 "../shaders/04.advanced/09_explode.gs"
+   Shader shader("../shaders/04.advanced/10_explode.vs",
+                 "../shaders/04.advanced/10_explode.fs"
                  );
+
+   Shader shader_normals("../shaders/04.advanced/10_normals.vs",
+                         "../shaders/04.advanced/10_normals.fs",
+                         "../shaders/04.advanced/10_normals.gs"
+                         );
+
+   Shader shader_normals2("../shaders/04.advanced/10_normals2.vs",
+                          "../shaders/04.advanced/10_normals2.fs",
+                          "../shaders/04.advanced/10_normals2.gs"
+                          );
 
    Model model("../models/nanosuit/nanosuit.obj");
 
@@ -127,19 +136,33 @@ int main() {
       glm::mat4 view;
       view = glm::lookAt(camera_pos, camera_pos + camera_front, camera_up);
 
-      // crysis model
       shader.use();
-      shader.setf("time", glfwGetTime());
-
       shader.setmat4("projection", projection);
       shader.setmat4("view", view);
-
       glm::mat4 wmodel;
       wmodel = glm::translate(wmodel, glm::vec3(0.0f, -1.75f, 0.0f));
       wmodel = glm::scale(wmodel, glm::vec3(0.2f));
       shader.setmat4("model", wmodel);
-
       model.draw(shader);
+
+      // shader_normals2.use();
+      // shader_normals2.setmat4("projection", projection);
+      // shader_normals2.setmat4("view", view);
+      // wmodel = glm::mat4();
+      // wmodel = glm::translate(wmodel, glm::vec3(0.0f, -1.75f, 0.0f));
+      // wmodel = glm::scale(wmodel, glm::vec3(0.2f));
+      // shader_normals2.setmat4("model", wmodel);
+      // model.draw(shader_normals2);
+
+      shader_normals.use();
+      shader_normals.setmat4("projection", projection);
+      shader_normals.setmat4("view", view);
+      wmodel = glm::mat4();
+      wmodel = glm::translate(wmodel, glm::vec3(0.0f, -1.75f, 0.0f));
+      wmodel = glm::scale(wmodel, glm::vec3(0.2f));
+      shader_normals.setmat4("model", wmodel);
+      model.draw(shader_normals);
+
 
       glfwSwapBuffers(window);
       glfwPollEvents();
