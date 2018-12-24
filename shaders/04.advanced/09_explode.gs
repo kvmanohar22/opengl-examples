@@ -2,11 +2,12 @@
 layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
-out vec2 tex;
+out vec2 texf;
 
-in VS_OUT {
-    vec2 tex;
-} gs_in[];
+// in VS_OUT {
+//     vec2 tex;
+// } gs_in[];
+in vec2 tex[];
 
 uniform float time;
 
@@ -30,15 +31,18 @@ void main() {
     vec3 normal = get_normal(pt0, pt1, pt2);
 
     gl_Position = explode(pt0, normal);
-    tex = gs_in[0].tex;
+    // tex = gs_in[0].tex;
+    texf = tex[0];
     EmitVertex();
 
     gl_Position = explode(pt1, normal);
-    tex = gs_in[1].tex;
+    // tex = gs_in[1].tex;
+    texf = tex[1];
     EmitVertex();
 
     gl_Position = explode(pt2, normal);
-    tex = gs_in[2].tex;
+    // tex = gs_in[2].tex;
+    texf = tex[2];
     EmitVertex();
 
     EndPrimitive();
