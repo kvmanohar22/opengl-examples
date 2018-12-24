@@ -22,10 +22,14 @@
  *              BETTER WAY IS:
  *              model = glm::mat4();
  *              model = glm::translate(model, point0);
+ *          2. to print glm stuff
+ *             #include <glm/ext.hpp>
+ *             std::cout << glm::to_string(glm::vec3(0.0f));
  */
 
 #include "shader.hpp"
 #include "camera.hpp"
+#include "utils.hpp"
 
 #include <string>
 #include <fstream>
@@ -52,41 +56,28 @@ float last_frame = 0.0f;
 
 // callbacks
 bool first_mouse = true;
-double x_last = 400.0f;
-double y_last = 300.0f;
+double x_old = 400.0f;
+double y_old = 300.0f;
 
 Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
-void mouse_callback(GLFWwindow *window, double x_new, double y_new) {
+/**************************** MOUSE CALLBACK ****************************/
+void mouse_callback(GLFWwindow *window, 
+                    double x_new, double y_new) {
     if (first_mouse) {
-        x_last = x_new;
-        y_last = y_new;
+        x_old = x_new;
+        y_old = y_new;
         first_mouse = false;
     }
-    float dx = x_new - x_last;
-    float dy = y_last - y_new;
-    x_last = x_new;
-    y_last = y_new;
+    float dx = x_new - x_old;
+    float dy = y_old - y_new;
+    x_old = x_new;
+    y_old = y_new;
 
     camera.process_mouse_movement(dx, dy);
 }
 
-void process_input(GLFWwindow *window) {
-    float current_frame = glfwGetTime();
-    delta_time = current_frame - last_frame;
-    last_frame = current_frame;
-    float camera_speed = 2.5f * delta_time;
-
-    if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-        camera.process_keyboard(FORWARD, delta_time);
-    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-        camera.process_keyboard(BACKWARD, delta_time);
-    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-        camera.process_keyboard(LEFT, delta_time);
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-        camera.process_keyboard(RIGHT, delta_time);
-}
-
+/**************************** SCROLL CALLBACK ****************************/
 void scroll_callback(GLFWwindow *window, double dx, double dy) {
     camera.process_scroll(dy);
 }
@@ -198,7 +189,7 @@ int main() {
     glm::mat4 projection, view, model;
 
     while (!glfwWindowShouldClose(window)) {
-        process_input(window);
+        utils::process_input(window, last_frame, delta_time, camera);
 
         glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
