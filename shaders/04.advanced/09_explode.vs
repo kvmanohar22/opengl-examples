@@ -7,9 +7,11 @@ uniform mat4 projection;
 uniform mat4 view;
 uniform mat4 model;
 
-out vec2 tex_pos;
+out VS_OUT {
+    vec2 tex;
+} vs_out;
 
 void main() {
    gl_Position = projection * view * model * vec4(ipos, 1.0f);
-   tex_pos = itex_pos;
+   vs_out.tex = itex_pos;
 }

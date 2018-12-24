@@ -111,14 +111,13 @@ int main() {
    glfwSetScrollCallback(window, scroll_callback);
 
    Shader shader("../shaders/04.advanced/09_explode.vs",
-                 "../shaders/04.advanced/09_explode.fs"
+                 "../shaders/04.advanced/09_explode.fs",
                  "../shaders/04.advanced/09_explode.gs"
                  );
 
    Model model("../models/nanosuit/nanosuit.obj");
 
    shader.use();
-   shader.setf("time", glfwGetTime());
 
    while (!glfwWindowShouldClose(window)) {
       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -130,6 +129,7 @@ int main() {
 
       // crysis model
       shader.use();
+      shader.setf("time", glfwGetTime());
       shader.setvec3("view_pos", camera_pos);
       process_input(window);
 

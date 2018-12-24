@@ -38,6 +38,9 @@ builder(02.lighting/05.light_casters/point_lights.cpp pointlight)
 builder(02.lighting/05.light_casters/spotlight.cpp spotlight)
 builder(02.lighting/06.multiple_lights/multiple_lights.cpp multiple)
 
+# chapter 3
+builder(03.models/nanosuit.cpp nanosuit)
+
 # chapter 4
 builder(04.advanced/01_depth_testing.cpp adv_depth)
 builder(04.advanced/02_stencil_testing.cpp stencil)
@@ -46,3 +49,5 @@ builder(04.advanced/04_face_culling.cpp cull)
 builder(04.advanced/05_framebuffers.cpp buffer)
 builder(04.advanced/06_cubemaps.cpp cube)
 builder(04.advanced/08_advanced_glsl.cpp glsl)
+builder(04.advanced/09_geometry_shader.cpp geo)
+builder(04.advanced/09_explode.cpp explode)
