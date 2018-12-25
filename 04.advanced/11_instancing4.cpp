@@ -26,7 +26,7 @@ bool first_mouse = true;
 double x_old = 400.0f;
 double y_old = 300.0f;
 
-Camera camera(glm::vec3(0.0f, 100.0f, 200.0f));
+Camera camera(glm::vec3(0.0f, 0.0f, 200.0f));
 
 /**************************** MOUSE CALLBACK ****************************/
 void mouse_callback(GLFWwindow *window, 
@@ -151,7 +151,14 @@ int main() {
       projection = glm::perspective(glm::radians(camera.zoom), 
                                     (float)s_width/s_height, 
                                     0.1f, 1000.0f);
-      glm::mat4 view = camera.get_view_matrix();
+
+      float _R = 200.0f;
+      float _x = sin(glfwGetTime() / 3.14) * _R;
+      float _z = cos(glfwGetTime() / 3.14) * _R;
+      camera.update_position(glm::vec3(_x, 80.0f, _z));
+      glm::mat4 view = camera.get_view_matrix(MOVING);
+
+      // glm::mat4 view = camera.get_view_matrix();
 
       // draw planet
       shader_planet.use();
@@ -159,8 +166,8 @@ int main() {
       shader_planet.setmat4("view", view);
 
       glm::mat4 wmodel;
-      wmodel = glm::translate(wmodel, glm::vec3(0.0f, -40.0f, 0.0f));
-      wmodel = glm::scale(wmodel, glm::vec3(40.0f));
+      wmodel = glm::scale(wmodel, glm::vec3(4.0f));
+      wmodel = glm::translate(wmodel, glm::vec3(0.0f, 0.0f, 0.0f));
       shader_planet.setmat4("model", wmodel);
       model_planet.draw(shader_planet);
 
