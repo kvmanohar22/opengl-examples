@@ -26,7 +26,7 @@ bool first_mouse = true;
 double x_old = 400.0f;
 double y_old = 300.0f;
 
-Camera camera(glm::vec3(0.0f, 10.0f, 90.0f));
+Camera camera(glm::vec3(0.0f, 100.0f, 200.0f));
 
 /**************************** MOUSE CALLBACK ****************************/
 void mouse_callback(GLFWwindow *window, 
@@ -117,7 +117,7 @@ int main() {
    unsigned int vbo;
    glGenBuffers(1, &vbo);
    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-   glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &model_matrices, GL_STATIC_DRAW);
+   glBufferData(GL_ARRAY_BUFFER, amount * sizeof(glm::mat4), &model_matrices[0], GL_STATIC_DRAW);
 
    std::vector<Mesh> meshes = model_rock.meshes;
    GLsizei v4size = sizeof(glm::vec4);
@@ -150,25 +150,24 @@ int main() {
       glm::mat4 projection;
       projection = glm::perspective(glm::radians(camera.zoom), 
                                     (float)s_width/s_height, 
-                                    0.1f, 100.0f);
+                                    0.1f, 1000.0f);
       glm::mat4 view = camera.get_view_matrix();
 
       // draw planet
+      shader_planet.use();
+      shader_planet.setmat4("projection", projection);
+      shader_planet.setmat4("view", view);
+
+      glm::mat4 wmodel;
+      wmodel = glm::translate(wmodel, glm::vec3(0.0f, -40.0f, 0.0f));
+      wmodel = glm::scale(wmodel, glm::vec3(40.0f));
+      shader_planet.setmat4("model", wmodel);
+      model_planet.draw(shader_planet);
+
+      // draw asteroids
       shader_rock.use();
       shader_rock.setmat4("projection", projection);
       shader_rock.setmat4("view", view);
-      // shader_planet.use();
-      // shader_planet.setmat4("projection", projection);
-      // shader_planet.setmat4("view", view);
-
-      // glm::mat4 wmodel;
-      // wmodel = glm::translate(wmodel, glm::vec3(0.0f, -3.0f, 0.0f));
-      // wmodel = glm::scale(wmodel, glm::vec3(0.4f));
-      // shader_planet.setmat4("model", wmodel);
-      // model_planet.draw(shader_planet);
-
-      // draw asteroids
-      // shader_rock.use();
       for (size_t i = 0; i < meshes.size(); ++i) {
         glBindVertexArray(meshes[i].VAO);
         glDrawElementsInstanced(
