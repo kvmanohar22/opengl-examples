@@ -125,17 +125,22 @@ public:
         glUseProgram(_id);
     }
 
-    void seti(const char *name, const int val) {
+    void seti(const char *name, const int val) const {
         glUniform1i(glGetUniformLocation(this->_id, name), val);
     }
 
-    void setf(const char *name, const float val) {
+    void setf(const char *name, const float val) const {
         glUniform1f(glGetUniformLocation(this->_id, name), val);
     }
 
-    void setmat4(const char *name, const glm::mat4 val) {
+    void setmat4(const char *name, const glm::mat4 val) const {
         glUniformMatrix4fv(glGetUniformLocation(
          this->_id, name), 1, GL_FALSE, glm::value_ptr(val));
+    }
+
+    void setvec2(const char *name, const glm::vec2 val) const {
+        glUniform2fv(glGetUniformLocation(
+         this->_id, name), 1, glm::value_ptr(val));
     }
 
     void setvec3(const char *name, const glm::vec3 val) const {

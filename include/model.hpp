@@ -25,7 +25,6 @@ unsigned int texture_from_file(
 
 class Model {
 private:
-   std::vector<Mesh> meshes;
    std::string directory;
    std::vector<texture> textures_loaded;
    
@@ -40,16 +39,19 @@ private:
    );
 
 public:
+   std::vector<Mesh> meshes;
    Model(const char *path) {
       load_model(path);
       pprint();
    }
+   
    void draw(Shader shader) {
       for (int i = 0; i < meshes.size(); ++i) {
          meshes[i].draw(shader);
       }
    }
    
+   std::vector<Mesh>& get_meshes() { return this->meshes; }
 };
 
 void Model::pprint() {

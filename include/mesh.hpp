@@ -91,9 +91,14 @@ public:
       glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
       glBindVertexArray(0);
    }
-private:
+
+   unsigned int& get_VAO() { return this->VAO; }
+   unsigned int& get_VBO() { return this->VBO; }
+   unsigned int& get_EBO() { return this->EBO; }
+
    unsigned int VAO, VBO, EBO;
 
+private:
    void setup_mesh() {
       glGenVertexArrays(1, &VAO);
       glGenBuffers(1, &VBO);
